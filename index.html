@@ -450,12 +450,19 @@ function renderPreview(data){
         const totalWeight = perBowlWeight * item.qty;
         const totalDisplay = totalWeight >= 1000 ? `${(totalWeight/1000).toFixed(2)}kg` : `${totalWeight}g`;
         const bowlLabel = item.qty > 1 ? `${item.qty}× ` : "";
-        const title = item.base
-          ? `${bowlLabel}${cap(item.protein)} and ${cap(item.base)} Bowl · ${perBowlWeight}g`
-          : `${bowlLabel}${cap(item.protein)} Bowl · ${perBowlWeight}g`;
-        const breakdownLine = item.base
+        const hasProtein = item.protein_qty > 0;
+        const hasBase = item.base && item.base_qty > 0;
+        const titleName = hasProtein && hasBase
+          ? `${cap(item.protein)} and ${cap(item.base)}`
+          : hasProtein
+            ? cap(item.protein)
+            : cap(item.base);
+        const title = `${bowlLabel}${titleName} Bowl · ${perBowlWeight}g`;
+        const breakdownLine = hasProtein && hasBase
           ? `${item.protein_qty}g ${item.protein} · ${item.base_qty}g ${item.base}`
-          : `${item.protein_qty}g ${item.protein}`;
+          : hasProtein
+            ? `${item.protein_qty}g ${item.protein}`
+            : `${item.base_qty}g ${item.base}`;
         html += `<article class="item${item.boneless ? " boneless" : ""}">
           <div style="margin-bottom:10px">
             <div class="item-name">${title}</div>
