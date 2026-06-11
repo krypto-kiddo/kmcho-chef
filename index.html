@@ -449,34 +449,35 @@ function renderPreview(data){
         const perBowlWeight = item.protein_qty + item.base_qty;
         const totalWeight = perBowlWeight * item.qty;
         const totalDisplay = totalWeight >= 1000 ? `${(totalWeight/1000).toFixed(2)}kg` : `${totalWeight}g`;
+        const bowlLabel = item.qty > 1 ? `${item.qty}× ` : "";
         const title = item.base
-          ? `${cap(item.protein)} and ${cap(item.base)}`
-          : cap(item.protein);
-        const sizeLine = item.qty > 1
-          ? `${item.qty} Bowls × ${perBowlWeight}g`
-          : `${perBowlWeight}g`;
+          ? `${bowlLabel}${cap(item.protein)} and ${cap(item.base)} Bowl · ${perBowlWeight}g`
+          : `${bowlLabel}${cap(item.protein)} Bowl · ${perBowlWeight}g`;
         const breakdownLine = item.base
           ? `${item.protein_qty}g ${item.protein} · ${item.base_qty}g ${item.base}`
           : `${item.protein_qty}g ${item.protein}`;
         html += `<article class="item${item.boneless ? " boneless" : ""}">
-          <div class="item-top">
+          <div style="margin-bottom:10px">
             <div class="item-name">${title}</div>
-            <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
           </div>
-          <div class="item-desc" style="margin-bottom:6px">${sizeLine}</div>
-          <div class="item-desc">${breakdownLine}</div>
-          <div class="meta">
-            ${item.boneless ? '<div class="tag cyan">BONELESS</div>' : ""}
-            <div class="tag">${totalDisplay} total</div>
+          <div class="item-desc" style="margin-bottom:14px">${breakdownLine}</div>
+          <div class="meta" style="justify-content:space-between;align-items:center">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              ${item.boneless ? '<div class="tag cyan">BONELESS</div>' : ""}
+              <div class="tag">${totalDisplay} total</div>
+            </div>
+            <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
           </div>
         </article>`;
       } else {
         html += `<article class="item">
-          <div class="item-top">
+          <div style="margin-bottom:10px">
             <div class="item-name">${item.qty} × Broth</div>
+          </div>
+          <div class="item-desc" style="margin-bottom:14px">300ml bottle${item.qty > 1 ? "s" : ""}</div>
+          <div class="meta" style="justify-content:flex-end">
             <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
           </div>
-          <div class="item-desc">300ml bottle${item.qty > 1 ? "s" : ""}</div>
         </article>`;
       }
     });
