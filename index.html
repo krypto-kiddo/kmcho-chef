@@ -412,54 +412,12 @@ function renderPreview(data){
 
   let html = "";
 
-  // Order Review section
-  html += `<div class="section">
-    <div class="section-head">
-      <div class="section-title"><h3>Order Review</h3><div class="section-line"></div></div>
-      <div class="section-note">${data.total_customers} customer${data.total_customers !== 1 ? "s" : ""}</div>
-    </div>
-    <div class="items">`;
-
-  data.orders.forEach(order => {
-    order.items.forEach(item => {
-      if(item.type === "bowl"){
-        const totalWeight = (item.protein_qty + item.base_qty) * item.qty;
-        const baseDesc = item.base ? ` + ${item.base} · ${item.base_qty}g` : " (protein only)";
-        html += `<article class="item${item.boneless ? " boneless" : ""}">
-          <div class="item-top">
-            <div class="item-name">${order.user_name}</div>
-            <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
-          </div>
-          <div class="item-desc">${item.protein} · ${item.protein_qty}g${baseDesc}</div>
-          <div class="meta">
-            <div class="tag orange">×${item.qty} bowl${item.qty > 1 ? "s" : ""}</div>
-            ${item.boneless ? '<div class="tag cyan">BONELESS</div>' : ""}
-            <div class="tag">${totalWeight}g total</div>
-          </div>
-        </article>`;
-      } else {
-        html += `<article class="item">
-          <div class="item-top">
-            <div class="item-name">${order.user_name}</div>
-            <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
-          </div>
-          <div class="item-desc">300ml broth bottle${item.qty > 1 ? "s" : ""}</div>
-          <div class="meta">
-            <div class="tag cyan">×${item.qty} broth</div>
-          </div>
-        </article>`;
-      }
-    });
-  });
-
-  html += `</div></div>`;
-
-  // Ingredient Compendium
+  // Ingredient Compendium — first
   if(data.compendium.length > 0){
     html += `<div class="section">
       <div class="section-head">
         <div class="section-title"><h3>Ingredient Compendium</h3><div class="section-line"></div></div>
-        <div class="section-note">Total to prep today</div>
+        <div class="section-note">Total to prep</div>
       </div>`;
     data.compendium.forEach(c => {
       html += `<div class="compendium-item">
@@ -469,6 +427,52 @@ function renderPreview(data){
     });
     html += `</div>`;
   }
+
+  // Order Review — below compendium, grouped by customer
+  html += `<div class="section">
+    <div class="section-head">
+      <div class="section-title"><h3>Order Review</h3><div class="section-line"></div></div>
+      <div class="section-note">${data.total_customers} customer${data.total_customers !== 1 ? "s" : ""}</div>
+    </div>`;
+
+  data.orders.forEach(order => {
+    html += `<div style="margin-bottom:28px">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--secondary);margin-bottom:12px;padding-left:4px">${order.user_name}</div>
+      <div class="items">`;
+
+    order.items.forEach(item => {
+      if(item.type === "bowl"){
+        const totalWeight = (item.protein_qty + item.base_qty) * item.qty;
+        html += `<article class="item${item.boneless ? " boneless" : ""}">
+          <div class="item-top">
+            <div class="item-name">${item.protein} · ${item.protein_qty}g</div>
+            <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
+          </div>
+          <div class="item-desc">${item.base ? `with ${item.base} · ${item.base_qty}g` : "protein only"}</div>
+          <div class="meta">
+            <div class="tag orange">×${item.qty} bowl${item.qty > 1 ? "s" : ""}</div>
+            ${item.boneless ? '<div class="tag cyan">BONELESS</div>' : ""}
+            <div class="tag">${totalWeight}g total</div>
+          </div>
+        </article>`;
+      } else {
+        html += `<article class="item">
+          <div class="item-top">
+            <div class="item-name">Broth</div>
+            <div class="item-price">${priceLabel(item.pricing, item.qty)}</div>
+          </div>
+          <div class="item-desc">300ml broth bottle${item.qty > 1 ? "s" : ""}</div>
+          <div class="meta">
+            <div class="tag cyan">×${item.qty} broth</div>
+          </div>
+        </article>`;
+      }
+    });
+
+    html += `</div></div>`;
+  });
+
+  html += `</div>`;
 
   container.innerHTML = html;
 }
